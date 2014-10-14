@@ -4,6 +4,7 @@
 #include "PlayerHandObserver.h"
 #include <vector>
 #include "Ball.h"
+#include "Cup.h"
 
 class PlayGame : public GAMESTATE, public PlayerHandObserver
 {
@@ -20,6 +21,7 @@ private:
 	FileSettings* settings;
 	std::vector<PlayerHand> players;
 	std::vector<Ball> balls;
-	Ball *ball;
+	Cup cup1;
+	//Ball *ball;
 };
 

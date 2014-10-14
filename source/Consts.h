@@ -39,13 +39,13 @@ enum Y_DIR
 namespace bp_ball
 {
 	//Modifies gravity effect
-	const float gravityMod = 50.0f;
+	//const float gravityMod = 3.0f;
 
 	//Modifies mass of ball - lighter = more bounce
-	const float mass = 100.0f;				//Decrease to increase bounce
+	//const float mass = 100.0f;				//Decrease to increase bounce
 
 	//Increase/Decrease horizontal velocity
-	const float velocityModifier = 20.0f;
+	//const float velocityModifier = 20.0f;
 
 	//Dims of ball - Ensure pwr^2
 	const int width = 16;

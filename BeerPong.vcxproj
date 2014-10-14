@@ -91,6 +91,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\CollisionCheck.cpp" />
+    <ClCompile Include="source\Cup.cpp" />
     <ClCompile Include="source\Ball.cpp" />
     <ClCompile Include="source\FileSettings.cpp" />
     <ClCompile Include="source\BeerPongGame.cpp" />
@@ -105,6 +107,8 @@
     <ClCompile Include="source\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\CollisionCheck.h" />
+    <ClInclude Include="source\Cup.h" />
     <ClInclude Include="include\AIE.h" />
     <ClInclude Include="include\IniFile.h" />
     <ClInclude Include="source\Ball.h" />
@@ -118,6 +122,7 @@
     <ClInclude Include="source\PlayerHand.h" />
     <ClInclude Include="source\PlayerHandObserver.h" />
     <ClInclude Include="source\PlayGame.h" />
+    <ClInclude Include="source\Rect.h" />
     <ClInclude Include="source\Vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
