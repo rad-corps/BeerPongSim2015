@@ -75,10 +75,14 @@ void PlayerHand::Update(float delta_)
 	if ( IsKeyDown(KEY_W) ) 
 	{
 		handPos.y += (HAND_SPEED * delta_);
+		if ( handPos.y > settings->GetFloat("SCREEN_H") - 16 ) 
+			handPos.y = settings->GetFloat("SCREEN_H") - 16;
 	}
 	if ( IsKeyDown(KEY_S) ) 
 	{
 		handPos.y -= (HAND_SPEED * delta_);
+		if ( handPos.y < settings->GetFloat("BAR_BOUNCE_HEIGHT") + 16 ) 
+			handPos.y = settings->GetFloat("BAR_BOUNCE_HEIGHT") + 16;
 	}
 	if ( IsKeyDown(KEY_A) ) 
 	{

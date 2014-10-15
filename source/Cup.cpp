@@ -4,11 +4,11 @@
 Cup::Cup(void)
 {
 	settings = FileSettings::Instance();
-	spriteID = CreateSprite("./images/cup.png", settings->GetInt("CUP_W"), settings->GetInt("CUP_H"), true);
+	spriteID = CreateSprite("./images/cup3.png", settings->GetInt("CUP_W"), settings->GetInt("CUP_H"), true);
 	cupPos = Vector2(settings->GetFloat("CUP1_POSX"), settings->GetFloat("CUP1_POSY"));
 	rimPos = Vector2(settings->GetFloat("CUP1_POSX"), settings->GetFloat("CUP1_POSY") + settings->GetInt("CUP_H")/2);
 	cupCollider = Rect(cupPos, settings->GetInt("CUP_W"), settings->GetInt("CUP_H"));
-	rimCollider = Rect(rimPos, settings->GetInt("CUP_W"), 10);
+	rimCollider = Rect(rimPos, settings->GetInt("CUP_W") * 0.9, 1);
 }
 
 

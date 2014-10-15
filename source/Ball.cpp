@@ -77,6 +77,9 @@ void Ball::Update(float delta_)
 			ballTimer = 0;												//Assists in stopping ball getting trapped between screen - thanks Gravity
 		}
 		
+		if ( velocity.x > 0 ) velocity.x -= settings->GetFloat("AIR_RESISTANCE") * delta_;
+		else velocity.x += settings->GetFloat("AIR_RESISTANCE") * delta_;
+
 		velocity.y -= settings->GetFloat("GRAVITY") * delta_;
 		pos += velocity;
 
