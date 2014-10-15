@@ -148,6 +148,11 @@ void PlayerHand::IncreaseDrunkennessForTesting()
 	drunkenness += (GetDeltaTime() * 20);
 }
 
+void PlayerHand::TakeADrink()
+{
+	drunkenness += settings->GetFloat("DRUNKOMETER_INCREASER");
+}
+
 void PlayerHand::DecreaseDrunkennessForTesting()
 {
 	drunkenness -= (GetDeltaTime() * 20);

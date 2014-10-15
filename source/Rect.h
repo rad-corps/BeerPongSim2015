@@ -5,6 +5,15 @@
 #include <iostream>
 #include <sstream>
 
+enum COLLISION_SIDE{
+	NO_COLLISION,
+	LEFT,
+	RIGHT,
+	TOP,
+	BOTTOM
+};
+
+
 struct Rect
 {
 	float width;

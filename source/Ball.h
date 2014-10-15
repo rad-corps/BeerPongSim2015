@@ -19,7 +19,9 @@ public:
 	void Update(float delta_);
 	void Draw();
 	bool Active();
-
+	void ReboundOffCup();
+	bool IsFalling();
+	void Kill();
 	Rect GetCollider();
 
 private:

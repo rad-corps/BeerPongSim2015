@@ -9,8 +9,6 @@ public:
 
 	static bool CheckRectangleCollision(Rect r1_, Rect r2_, unsigned int colliderSprite = 0);
 
-
-
 private:
 	CollisionCheck(void);
 };

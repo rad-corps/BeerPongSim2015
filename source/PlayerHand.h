@@ -23,6 +23,7 @@ public:
 	void Draw();
 	void RegisterObserver(PlayerHandObserver* observer_);
 	DRUNK_ZONE GetCurrentZone();
+	void TakeADrink();
 
 private:
 
@@ -49,6 +50,8 @@ private:
 	//Testing Functions
 	void IncreaseDrunkennessForTesting();
 	void DecreaseDrunkennessForTesting();
+
+	
 
 	PlayerHandObserver* observer;
 

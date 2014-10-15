@@ -12,13 +12,16 @@ public:
 	void Draw();
 	void Update(float delta_);
 
-	Rect GetCollider();
+	Rect GetCupCollider();
+	Rect GetRimCollider();
 
 private:
 	unsigned int spriteID;
 	FileSettings *settings;
 
-	Rect collider;
-	Vector2 pos;
+	Rect cupCollider;
+	Rect rimCollider;
+	Vector2 cupPos;
+	Vector2 rimPos;
 };
 

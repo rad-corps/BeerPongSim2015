@@ -35,9 +35,15 @@ void PlayGame::Update()
 		{
 			balls[i].Update(delta);
 
-			if ( CollisionCheck::CheckRectangleCollision(balls[i].GetCollider(), cup1.GetCollider()) )
+			if ( CollisionCheck::CheckRectangleCollision(balls[i].GetCollider(), cup1.GetRimCollider()) &&  balls[i].IsFalling())
 			{
-				cout << "Ball in CUP!!!" << endl;
+				players[0].TakeADrink();
+				balls[i].Kill();
+			}
+			else if ( CollisionCheck::CheckRectangleCollision(balls[i].GetCollider(), cup1.GetCupCollider()) )
+			{
+				//cout << "Hit Outside of CUP!!!" << endl;
+				balls[i].ReboundOffCup();
 			}
 		}
 	}

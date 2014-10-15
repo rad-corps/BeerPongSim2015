@@ -32,6 +32,21 @@ bool Ball::Active()
 	return active;
 }
 
+void Ball::Kill()
+{
+	active = false;
+}
+
+void Ball::ReboundOffCup()
+{
+	velocity.x = -velocity.x;
+}
+
+bool Ball::IsFalling()	
+{
+	return velocity.y < 0;
+}
+
 Rect
 Ball::GetCollider()
 {
