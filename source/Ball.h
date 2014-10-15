@@ -18,6 +18,7 @@ public:
 
 	void Update(float delta_);
 	void Draw();
+	bool Active();
 
 	Rect GetCollider();
 

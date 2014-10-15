@@ -19,5 +19,6 @@ private:
 	FileSettings *settings;
 
 	Rect collider;
+	Vector2 pos;
 };
 

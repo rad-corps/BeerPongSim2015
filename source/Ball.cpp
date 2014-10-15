@@ -27,6 +27,11 @@ Ball::~Ball()
 {
 }
 
+bool Ball::Active()
+{
+	return active;
+}
+
 Rect
 Ball::GetCollider()
 {

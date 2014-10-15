@@ -5,11 +5,8 @@ Cup::Cup(void)
 {
 	settings = FileSettings::Instance();
 	spriteID = CreateSprite("./images/cup.png", settings->GetInt("CUP_W"), settings->GetInt("CUP_H"), true);
-	settings = FileSettings::Instance();
-
-	collider = Rect(Vector2(settings->GetFloat("CUP1_POSX") - (settings->GetInt("CUP_W") / 2), 
-		settings->GetFloat("CUP1_POSY") + settings->GetInt("CUP_H") / 2),
-		settings->GetInt("CUP_W"), settings->GetInt("CUP_H"));
+	pos = Vector2(settings->GetFloat("CUP1_POSX"), settings->GetFloat("CUP1_POSY"));
+	collider = Rect(pos, settings->GetInt("CUP_W"), settings->GetInt("CUP_H"));
 }
 
 

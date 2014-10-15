@@ -1,45 +1,56 @@
 #pragma once
 #include "Vector.h"
+#include <string>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
 struct Rect
 {
-	Vector2 tl;
-	Vector2 tr;
-	Vector2 bl;
-	Vector2 br;
+	float width;
+	float height; 
+	Vector2 centre; 
 
 	float Left()
 	{
-		return tl.x;
+		return centre.x - (width / 2);
 	}
 
 	float Right()
 	{
-		return tr.x;
+		return centre.x + (width / 2);
 	}
 
 	float Bottom()
 	{
-		return bl.y;
+		return centre.y - (height / 2);
 	}
 
 	float Top()
 	{
-		return tl.y;
+		return centre.y + (height / 2);
 	}
 
 	//dont allow the user of the class to make a dodgy rectangle
-	Rect(Vector2 bl_, int width_, int height_)
+	Rect(Vector2 centre_, float width_, float height_)
 	{
-		bl = bl_;
-		br.y = bl.y;
-		br.x = bl.x + width_;
-		tr.y = bl.y + height_;
-		tr.x = br.x;
-		tl.x = bl.x;
-		tl.y = tr.y;
+		centre = centre_;
+		width = width_;
+		height = height_;
 	}
 	Rect(){}
+
+	std::string ToString()
+	{
+		std::ostringstream out;
+		out //<< std::setprecision(1) 
+			<< "Left: " << Left() << "\t" 
+			<< "Right: " << Right() << "\t" 
+			<< "Top: " << Top() << "\t" 
+			<< "Bottom: " << Bottom(); 
+
+		return out.str();
+	}
 
 	
 };

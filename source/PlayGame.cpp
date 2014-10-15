@@ -30,11 +30,15 @@ void PlayGame::Update()
 
 	for(int i = 0; i < balls.size(); i++)
 	{
-		balls[i].Update(delta);
 
-		if ( CollisionCheck::CheckRectangleCollision(balls[i].GetCollider(), cup1.GetCollider()) )
+		if ( balls[i].Active() ) 
 		{
-			cout << "Ball in CUP!!!" << endl;
+			balls[i].Update(delta);
+
+			if ( CollisionCheck::CheckRectangleCollision(balls[i].GetCollider(), cup1.GetCollider()) )
+			{
+				cout << "Ball in CUP!!!" << endl;
+			}
 		}
 	}
 
