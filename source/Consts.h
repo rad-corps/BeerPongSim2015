@@ -48,6 +48,6 @@ namespace bp_ball
 	//const float velocityModifier = 20.0f;
 
 	//Dims of ball - Ensure pwr^2
-	const int width = 16;
-	const int height = 16;
+	//const int width = 16;
+	//const int height = 16;
 }

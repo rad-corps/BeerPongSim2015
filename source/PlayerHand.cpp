@@ -3,14 +3,16 @@
 #include "MathHelpers.h"
 #include <iostream>
 
-PlayerHand::PlayerHand(PlayerHandObserver* observer_)
+PlayerHand::PlayerHand(PlayerHandObserver* observer_, PlayerInitialisers initialisers_)
 {
 	settings = FileSettings::Instance();
-	handSpriteTest = CreateSprite( "./images/hand_white_box.png", 32, 32, true );
-	handPos = Vector2(30.f,settings->GetInt("SCREEN_H")*0.5f);
+	handSpriteTest = CreateSprite( initialisers_.spritePath.c_str(), settings->GetInt("HAND_W"), settings->GetInt("HAND_H"), true );
+	handPos = Vector2(initialisers_.initialX,initialisers_.initialY);
 	
-	RotateSprite(handSpriteTest, INITIAL_ROTATION);
-	handRotation = 90.f;
+	invertX = initialisers_.invertX;
+
+	RotateSprite(handSpriteTest, initialisers_.initialRotation);
+	handRotation = 90.f;//TODO fix this hard code
 	//handRotation = INITIAL_ROTATION;
 	drunkenness = 0.f;
 	currentInvoluntaryMovementDuration = 0.f;
@@ -18,6 +20,11 @@ PlayerHand::PlayerHand(PlayerHandObserver* observer_)
 	RegisterObserver(observer_);
 
 	throwButtonHeld = false;
+	throwButtonTimer = 0.f;
+	throwButtonActive = true;
+
+	ballSpawnPositionOffset = initialisers_.ballSpawnPositionOffset;
+	ballSpawnRotationOffset = initialisers_.ballSpawnRotationOffset;
 }
 
 
@@ -30,6 +37,11 @@ PlayerHand::~PlayerHand(void)
 void PlayerHand::RegisterObserver(PlayerHandObserver* observer_)
 {
 	observer = observer_;
+}
+
+void PlayerHand::SetControls(PlayerControls controls_)
+{
+	controls = controls_;
 }
 
 void PlayerHand::Draw()
@@ -52,12 +64,32 @@ void PlayerHand::Draw()
 	SetFont( nullptr );
 }
 
+void PlayerHand::ThrowBall()
+{
+	//yeah its a hack, sorry!
+	float tempHandRot = 0.f;
+	if ( invertX ) 
+		tempHandRot = handRotation - 180;
+	else
+		tempHandRot = handRotation;
+
+	throwButtonHeld = false;
+	//calculate initial ball position
+	Vector2 ballOffset;		
+	
+	float handRotationInRadians = (tempHandRot * DEG_TO_RAD) + ballSpawnRotationOffset;
+	ballOffset.SetAngle(handRotationInRadians);
+	ballOffset.SetMagnitude(ballSpawnPositionOffset);
+	
+	ballOffset += handPos;
+	observer->ThrowBall(ballOffset, tempHandRot, throwVelocity);
+}
+
+
 void PlayerHand::Update(float delta_)
 {
 	if ( GetCurrentZone() == DRUNK_ZONE::DRUNK_ZONE_END )
 		return;
-
-
 
 	//increase timer
 	currentInvoluntaryMovementDuration += delta_;
@@ -72,52 +104,70 @@ void PlayerHand::Update(float delta_)
 	DoInvoluntaryMovement();	
 
 	//do user input
-	if ( IsKeyDown(KEY_W) ) 
+	if ( IsKeyDown(controls.up) ) 
 	{
-		handPos.y += (HAND_SPEED * delta_);
+		handPos.y += (settings->GetFloat("HAND_SPEED") * delta_);
 		if ( handPos.y > settings->GetFloat("SCREEN_H") - 16 ) 
 			handPos.y = settings->GetFloat("SCREEN_H") - 16;
 	}
-	if ( IsKeyDown(KEY_S) ) 
+	if ( IsKeyDown(controls.down) ) 
 	{
-		handPos.y -= (HAND_SPEED * delta_);
+		handPos.y -= (settings->GetFloat("HAND_SPEED") * delta_);
 		if ( handPos.y < settings->GetFloat("BAR_BOUNCE_HEIGHT") + 16 ) 
 			handPos.y = settings->GetFloat("BAR_BOUNCE_HEIGHT") + 16;
 	}
-	if ( IsKeyDown(KEY_A) ) 
+	if ( IsKeyDown(controls.anticlockwise) ) 
 	{
 		RotateHand(delta_, false);
 	}
-	if ( IsKeyDown(KEY_D) ) 
+	if ( IsKeyDown(controls.clockwise) ) 
 	{
 		RotateHand(delta_, true);
 	}
-	if ( IsKeyDown(KEY_RIGHT) )
+	//if ( IsKeyDown(KEY_RIGHT) )
+	//{
+	//	IncreaseDrunkennessForTesting(delta_);
+	//}
+	//if ( IsKeyDown(KEY_LEFT) )
+	//{
+	//	DecreaseDrunkennessForTesting(delta_);
+	//}
+	
+	//inactive if user has held it longer than MAX_VELOCITY_CAP_TIME
+	if ( throwButtonActive )
 	{
-		IncreaseDrunkennessForTesting();
-	}
-	if ( IsKeyDown(KEY_LEFT) )
-	{
-		DecreaseDrunkennessForTesting();
-	}
-	if ( IsKeyDown(KEY_LEFT_CONTROL))
-	{
-		if ( throwButtonHeld ) 
+		if ( IsKeyDown(controls.throwBall))
 		{
+			//if throw button only just pressed this frame
+			if ( !throwButtonHeld ) 
+			{
+				throwButtonHeld = true;
+				throwVelocity = 0.f;			
+				throwButtonTimer = 0.f;
+			}
+
+			//add to velocity and held timer
 			throwVelocity += delta_ * settings->GetFloat("THROW_VELOCITY_MULTI");
-		}
-		else
-		{
-			throwButtonHeld = true;
-			throwVelocity = 0.f;
-			throwVelocity += delta_ * settings->GetFloat("THROW_VELOCITY_MULTI");
+			throwButtonTimer += delta_;
+
+			//if throw button still held, but we have hit the max timer.
+			if ( throwButtonTimer > settings->GetFloat("MAX_VELOCITY_CAP_TIME") ) 
+			{
+				throwButtonActive = false;
+				ThrowBall();
+			}
+		}	
+		else if (throwButtonHeld) //if throw button was just released
+		{		
+			ThrowBall();
 		}
 	}
-	else if (throwButtonHeld)
+	//if the throw key is not down, then reactivate the throw button
+	else if ( !IsKeyDown(controls.throwBall) )
 	{
-		throwButtonHeld = false;
-		observer->ThrowBall(handPos, handRotation, throwVelocity);
+		throwButtonActive = true;
 	}
+
 
 	//move sprite to final position
 	MoveSprite( handSpriteTest,  handPos.x, handPos.y );
@@ -147,9 +197,9 @@ void PlayerHand::RotateHand(float delta_, bool clockwise_)
 }
 
 //these 2 functions are just here for testing
-void PlayerHand::IncreaseDrunkennessForTesting()
+void PlayerHand::IncreaseDrunkennessForTesting(float delta_)
 {
-	drunkenness += (GetDeltaTime() * 20);
+	drunkenness += (delta_ * 20);
 }
 
 void PlayerHand::TakeADrink()
@@ -157,9 +207,9 @@ void PlayerHand::TakeADrink()
 	drunkenness += settings->GetFloat("DRUNKOMETER_INCREASER");
 }
 
-void PlayerHand::DecreaseDrunkennessForTesting()
+void PlayerHand::DecreaseDrunkennessForTesting(float delta_)
 {
-	drunkenness -= (GetDeltaTime() * 20);
+	drunkenness -= (delta_ * 20);
 	if ( drunkenness < 0.0f ) 
 		drunkenness = 0.0f;
 }

@@ -29,7 +29,6 @@ void BeerPongGame::Run()
 	{
 
 		ClearScreen();
-		float fDeltaT = GetDeltaTime();
 
 		//reload the settings file if 'R' is pressed
 		if ( IsKeyDown(KEY_R) )

@@ -1,5 +1,7 @@
 #pragma once
 
+#define DEG_TO_RAD 0.01745329252
+
 //generate a random number from from to to inclusive
 int RandomNumber(int from, int to);
 

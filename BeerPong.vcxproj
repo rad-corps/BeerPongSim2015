@@ -119,6 +119,7 @@
     <ClInclude Include="source\GAMESTATE.h" />
     <ClInclude Include="source\MathHelpers.h" />
     <ClInclude Include="source\Menu.h" />
+    <ClInclude Include="source\PlayerControls.h" />
     <ClInclude Include="source\PlayerHand.h" />
     <ClInclude Include="source\PlayerHandObserver.h" />
     <ClInclude Include="source\PlayGame.h" />
