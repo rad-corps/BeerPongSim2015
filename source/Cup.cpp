@@ -8,7 +8,7 @@ Cup::Cup(void)
 	cupPos = Vector2(settings->GetFloat("CUP1_POSX"), settings->GetFloat("CUP1_POSY"));
 	rimPos = Vector2(settings->GetFloat("CUP1_POSX"), settings->GetFloat("CUP1_POSY") + settings->GetInt("CUP_H")/2);
 	cupCollider = Rect(cupPos, settings->GetInt("CUP_W"), settings->GetInt("CUP_H"));
-	rimCollider = Rect(rimPos, settings->GetInt("CUP_W") * 0.9, 1);
+	rimCollider = Rect(rimPos, settings->GetInt("CUP_W"), 1);
 }
 
 Cup::Cup(CupInitialiser ci_)
@@ -19,8 +19,8 @@ Cup::Cup(CupInitialiser ci_)
 	rimPos = Vector2(cupPos.x, cupPos.y + ci_.height/2);
 	cupCollider = Rect(cupPos, ci_.width, ci_.height);
 	
-	//rim collider 1 pixel high, 90% of the width of the cup
-	rimCollider = Rect(rimPos, ci_.width * 0.9, 1);
+	//rim collider 1 pixel high, full width of the cup
+	rimCollider = Rect(rimPos, ci_.width, 1);
 	victim = ci_.victim;
 }
 
