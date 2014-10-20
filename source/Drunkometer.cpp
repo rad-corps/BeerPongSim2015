@@ -34,7 +34,7 @@ void Drunkometer::Draw()
 	//display drunkometer
 	string drunkStr = "Drunkometer: ";
 	drunkStr += to_string(drunkenness) + " - " +  DrunkZoneToString(GetCurrentZone());
-	DrawString( drunkStr.c_str(),	pos.x,	pos.y, 0.5f);
+	DrawString( drunkStr.c_str(),	pos.x,	pos.y, 0.8f, SColour(0,0,0,255));
 
 	SetFont( nullptr );
 }
