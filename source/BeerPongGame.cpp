@@ -27,7 +27,6 @@ void BeerPongGame::Run()
 {
 	do 
 	{
-
 		ClearScreen();
 
 		//reload the settings file if 'R' is pressed

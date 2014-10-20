@@ -6,6 +6,7 @@
 #include "PlayerHandObserver.h"
 #include "FileSettings.h"
 #include "PlayerControls.h"
+#include "Drunkometer.h"
 
 //const float HAND_SPEED = 250.f;
 //const float INITIAL_ROTATION = 270.f;
@@ -17,13 +18,13 @@
 class PlayerHand
 {
 public:
-	PlayerHand(PlayerHandObserver* observer_, PlayerInitialisers initialisers_);
+	PlayerHand(PlayerHandObserver* observer_, PlayerInitialisers initialisers_, Drunkometer drunkometer_);
 	~PlayerHand(void);
 
 	void Update(float delta_);
 	void Draw();
 	void RegisterObserver(PlayerHandObserver* observer_);
-	DRUNK_ZONE GetCurrentZone();
+	
 	void TakeADrink();
 	void SetControls(PlayerControls controls_);
 	void SetInitialisers(PlayerInitialisers init_);
@@ -33,11 +34,13 @@ private:
 	void RotateHand(float delta_, bool clockwise_);
 	void ThrowBall();
 
-	string DrunkZoneToString(DRUNK_ZONE dz_);	
+	
 	Vector2 handPos; //locked x Axis
 	float handRotation; //limits?
 	//unsigned int handSprite;
 	unsigned int handSpriteTest;
+	
+	Drunkometer drunkometer;
 	float drunkenness;
 	
 	//involuntary movement y axis

@@ -11,6 +11,19 @@ Cup::Cup(void)
 	rimCollider = Rect(rimPos, settings->GetInt("CUP_W") * 0.9, 1);
 }
 
+Cup::Cup(CupInitialiser ci_)
+{
+	settings = FileSettings::Instance();
+	spriteID = CreateSprite("./images/pong_cup_v1.png", ci_.width, ci_.height, true);
+	cupPos = ci_.pos;
+	rimPos = Vector2(cupPos.x, cupPos.y + ci_.height/2);
+	cupCollider = Rect(cupPos, ci_.width, ci_.height);
+	
+	//rim collider 1 pixel high, 90% of the width of the cup
+	rimCollider = Rect(rimPos, ci_.width * 0.9, 1);
+	victim = ci_.victim;
+}
+
 
 Cup::~Cup(void)
 {
@@ -28,7 +41,7 @@ Rect Cup::GetRimCollider()
 
 void Cup::Update(float delta_)
 {
-	MoveSprite(spriteID, settings->GetFloat("CUP1_POSX"), settings->GetFloat("CUP1_POSY"));
+	MoveSprite(spriteID, cupPos.x, cupPos.y);
 }
 
 void Cup::Draw()

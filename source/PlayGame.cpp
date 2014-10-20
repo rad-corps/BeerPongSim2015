@@ -5,12 +5,18 @@
 
 PlayGame::PlayGame()
 {
+	//init file settings
 	settings = FileSettings::Instance();
+	
+	//set initial game state
 	stateSelection = GAME_STATES::PLAYING_GAME;
-	//backgroundImage = CreateSprite("./images/BeerPong.jpg", settings->GetInt("SCREEN_W"), settings->GetInt("SCREEN_H"), true);
+	
+	//setup background image
 	backgroundImage = CreateSprite("./images/bar-02.png", settings->GetInt("SCREEN_W"), settings->GetInt("SCREEN_H"), true);
 	MoveSprite(backgroundImage, settings->GetInt("SCREEN_W")*0.5f, settings->GetInt("SCREEN_H")*0.5f);
 	
+	
+	//setup the control layout
 	PlayerControls p1Controls;
 	p1Controls.up = KEY_W;
 	p1Controls.down = KEY_S;
@@ -25,6 +31,15 @@ PlayGame::PlayGame()
 	p2Controls.clockwise = KEY_RIGHT;
 	p2Controls.throwBall = KEY_RIGHT_CONTROL;
 
+	//create the drunkometers
+	DrunkometerInitialisers drunkoInit1;
+	DrunkometerInitialisers drunkoInit2;
+	drunkoInit1.pos = Vector2(settings->GetFloat("DRUNKOMETER_1_X"), settings->GetFloat("DRUNKOMETER_1_Y"));
+	drunkoInit2.pos = Vector2(settings->GetFloat("DRUNKOMETER_2_X"), settings->GetFloat("DRUNKOMETER_2_Y"));	
+	Drunkometer drunko1 = Drunkometer(drunkoInit1);
+	Drunkometer drunko2 = Drunkometer(drunkoInit2);
+
+	//create the hands/players
 	PlayerInitialisers p1Init;
 	p1Init.initialX = settings->GetFloat("P1_INITIAL_X");
 	p1Init.initialY = settings->GetFloat("P1_INITIAL_Y");
@@ -43,14 +58,29 @@ PlayGame::PlayGame()
 	p2Init.ballSpawnRotationOffset = settings->GetFloat("P2_BALL_SPAWN_ROTATION_OFFSET");
 	p2Init.invertX = true;
 
-	PlayerHand p1 = PlayerHand(this, p1Init);
-	PlayerHand p2 = PlayerHand(this, p2Init);
-
+	PlayerHand p1 = PlayerHand(this, p1Init, drunko1);
+	PlayerHand p2 = PlayerHand(this, p2Init, drunko2);
 	p1.SetControls(p1Controls);
-	p2.SetControls(p2Controls);
-	
+	p2.SetControls(p2Controls);	
 	players.push_back(p1);
 	players.push_back(p2);
+
+	//create the cups
+	CupInitialiser ci1;
+	CupInitialiser ci2;
+	
+	ci1.pos = Vector2(settings->GetFloat("CUP1_POSX"), settings->GetFloat("CUP1_POSY"));
+	ci1.width = settings->GetFloat("CUP_W");
+	ci1.height = settings->GetFloat("CUP_H");
+	ci1.victim = 1;//PLAYER 2 DRINKS if ball goes in this cup
+
+	ci2.pos = Vector2(settings->GetFloat("CUP2_POSX"), settings->GetFloat("CUP2_POSY"));
+	ci2.width = settings->GetFloat("CUP_W");
+	ci2.height = settings->GetFloat("CUP_H");
+	ci2.victim = 0;//PLAYER 1 DRINKS if ball goes in this cup
+
+	cups.push_back(Cup(ci1));
+	cups.push_back(Cup(ci2));
 }
 
 
@@ -67,27 +97,35 @@ void PlayGame::Update()
 		players[i].Update(delta);
 	}
 
+	//each ball
 	for(int i = 0; i < balls.size(); i++)
 	{
-
+		//update/move it
 		if ( balls[i].Active() ) 
 		{
 			balls[i].Update(delta);
 
-			if ( CollisionCheck::CheckRectangleCollision(balls[i].GetCollider(), cup1.GetRimCollider()) &&  balls[i].IsFalling())
+			//did it hit a cup?
+			for ( int cupNum = 0; cupNum < cups.size(); ++cupNum ) 
 			{
-				players[0].TakeADrink();
-				balls[i].Kill();
-			}
-			else if ( CollisionCheck::CheckRectangleCollision(balls[i].GetCollider(), cup1.GetCupCollider()) )
-			{
-				//cout << "Hit Outside of CUP!!!" << endl;
-				balls[i].ReboundOffCup();
+				if ( CollisionCheck::CheckRectangleCollision(balls[i].GetCollider(), cups[cupNum].GetRimCollider()) &&  balls[i].IsFalling())
+				{
+					players[cups[cupNum].victim].TakeADrink();
+					balls[i].Kill();
+				}
+				else if ( CollisionCheck::CheckRectangleCollision(balls[i].GetCollider(),  cups[cupNum].GetCupCollider()) )
+				{
+					//cout << "Hit Outside of CUP!!!" << endl;
+					balls[i].ReboundOffCup();
+				}
 			}
 		}
 	}
 
-	cup1.Update(delta);
+	for ( int i = 0; i < cups.size(); ++i )
+	{
+		cups[i].Update(delta);
+	}
 
 	
 
@@ -108,7 +146,10 @@ void PlayGame::Draw()
 		balls[i].Draw();
 	}
 
-	cup1.Draw();
+	for (int i = 0; i < cups.size(); ++i )
+	{
+		cups[i].Draw();
+	}
 
 	
 }

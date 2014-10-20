@@ -3,7 +3,7 @@
 #include "MathHelpers.h"
 #include <iostream>
 
-PlayerHand::PlayerHand(PlayerHandObserver* observer_, PlayerInitialisers initialisers_)
+PlayerHand::PlayerHand(PlayerHandObserver* observer_, PlayerInitialisers initialisers_, Drunkometer drunkometer_)
 {
 	settings = FileSettings::Instance();
 	handSpriteTest = CreateSprite( initialisers_.spritePath.c_str(), settings->GetInt("HAND_W"), settings->GetInt("HAND_H"), true );
@@ -25,6 +25,8 @@ PlayerHand::PlayerHand(PlayerHandObserver* observer_, PlayerInitialisers initial
 
 	ballSpawnPositionOffset = initialisers_.ballSpawnPositionOffset;
 	ballSpawnRotationOffset = initialisers_.ballSpawnRotationOffset;
+
+	drunkometer = drunkometer_;
 }
 
 
@@ -49,19 +51,7 @@ void PlayerHand::Draw()
 	//draw the hand
 	DrawSprite( handSpriteTest);
 
-	//write stuff about things
-	SetFont( "./fonts/invaders.fnt" );
-	
-	//display drunkometer
-	string drunkStr = "Drunkometer: ";
-	drunkStr += to_string(drunkenness);
-	DrawString( drunkStr.c_str(),	10,	settings->GetInt("SCREEN_H") - 2 , 0.5f);
-
-	//display current zone
-	string dzStr = DrunkZoneToString(GetCurrentZone());
-	DrawString( dzStr.c_str(),	200,	settings->GetInt("SCREEN_H") - 2 , 0.5f);
-
-	SetFont( nullptr );
+	drunkometer.Draw();
 }
 
 void PlayerHand::ThrowBall()
@@ -88,7 +78,7 @@ void PlayerHand::ThrowBall()
 
 void PlayerHand::Update(float delta_)
 {
-	if ( GetCurrentZone() == DRUNK_ZONE::DRUNK_ZONE_END )
+	if ( drunkometer.GetCurrentZone() == DRUNK_ZONE::DRUNK_ZONE_END )
 		return;
 
 	//increase timer
@@ -124,14 +114,6 @@ void PlayerHand::Update(float delta_)
 	{
 		RotateHand(delta_, true);
 	}
-	//if ( IsKeyDown(KEY_RIGHT) )
-	//{
-	//	IncreaseDrunkennessForTesting(delta_);
-	//}
-	//if ( IsKeyDown(KEY_LEFT) )
-	//{
-	//	DecreaseDrunkennessForTesting(delta_);
-	//}
 	
 	//inactive if user has held it longer than MAX_VELOCITY_CAP_TIME
 	if ( throwButtonActive )
@@ -168,9 +150,11 @@ void PlayerHand::Update(float delta_)
 		throwButtonActive = true;
 	}
 
-
 	//move sprite to final position
 	MoveSprite( handSpriteTest,  handPos.x, handPos.y );
+
+	//update the drunkometer
+	drunkometer.Update(drunkenness);
 }
 
 //rotation
@@ -242,34 +226,10 @@ void PlayerHand::DoInvoluntaryMovement()
 {
 	float tempInvoluntaryMovementVelocity = involuntaryMovementVelocity;
 
-	if ( GetCurrentZone() == DRUNK_ZONE::DRUNK_ZONE_GAME_ON_MOLE )
+	if ( drunkometer.GetCurrentZone() == DRUNK_ZONE::DRUNK_ZONE_GAME_ON_MOLE )
 		tempInvoluntaryMovementVelocity /= settings->GetFloat("IN_THE_ZONE_DIVIDER");
 
 	involuntaryMovementDir == Y_DIR::Y_DIR_UP ? handPos.y += tempInvoluntaryMovementVelocity : handPos.y -= tempInvoluntaryMovementVelocity;
 }
 
 
-//Just a couple of helpers. Probably dont belong in PlayerHand class
-DRUNK_ZONE PlayerHand::GetCurrentZone()
-{
-	if ( drunkenness >= settings->GetInt("DRUNK_ZONE_END") )
-		return DRUNK_ZONE_END;
-	if ( drunkenness >= settings->GetInt("DRUNK_ZONE_TOO_FN_DRUNK"))
-		return DRUNK_ZONE_TOO_FN_DRUNK;
-	if ( drunkenness >= settings->GetInt("DRUNK_ZONE_GAME_ON_MOLE"))
-		return DRUNK_ZONE_GAME_ON_MOLE;
-	if ( drunkenness >= settings->GetInt("DRUNK_ZONE_NERVOUS"))
-		return DRUNK_ZONE_NERVOUS;
-}
-
-string PlayerHand::DrunkZoneToString(DRUNK_ZONE dz_)
-{
-	if ( dz_ == DRUNK_ZONE_NERVOUS ) 
-		return "Nervous..";
-	if ( dz_ == DRUNK_ZONE_GAME_ON_MOLE ) 
-		return "Game On Mole!";
-	if ( dz_ == DRUNK_ZONE_TOO_FN_DRUNK ) 
-		return "Too F'N Drunk!";
-	if ( dz_ == DRUNK_ZONE_END ) 
-		return "Fell over!";
-}

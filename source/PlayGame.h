@@ -21,7 +21,7 @@ private:
 	FileSettings* settings;
 	std::vector<PlayerHand> players;
 	std::vector<Ball> balls;
-	Cup cup1;
+	std::vector<Cup> cups;
 	//Ball *ball;
 };
 

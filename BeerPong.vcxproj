@@ -91,6 +91,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Drunkometer.cpp" />
     <ClCompile Include="source\CollisionCheck.cpp" />
     <ClCompile Include="source\Cup.cpp" />
     <ClCompile Include="source\Ball.cpp" />
@@ -107,6 +108,7 @@
     <ClCompile Include="source\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Drunkometer.h" />
     <ClInclude Include="source\CollisionCheck.h" />
     <ClInclude Include="source\Cup.h" />
     <ClInclude Include="include\AIE.h" />
