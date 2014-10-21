@@ -65,7 +65,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)$(ProjectName)_d.exe</OutputFile>
       <AdditionalLibraryDirectories>./libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>AIE_1st_Year_Framework_d.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>AIE_1st_Year_Framework_d.lib;kernel32.lib;bass.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName)_d.pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
@@ -87,10 +87,11 @@
       <OptimizeReferences>true</OptimizeReferences>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>./libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>AIE_1st_Year_Framework.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>AIE_1st_Year_Framework.lib;kernel32.lib;bass.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\BeerPongSound.cpp" />
     <ClCompile Include="source\Drunkometer.cpp" />
     <ClCompile Include="source\CollisionCheck.cpp" />
     <ClCompile Include="source\Cup.cpp" />
@@ -108,6 +109,7 @@
     <ClCompile Include="source\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\BeerPongSound.h" />
     <ClInclude Include="source\Drunkometer.h" />
     <ClInclude Include="source\CollisionCheck.h" />
     <ClInclude Include="source\Cup.h" />

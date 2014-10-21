@@ -2,6 +2,7 @@
 #include "AIE.h"
 #include "MathHelpers.h"
 #include <iostream>
+#include "BeerPongSound.h"
 
 PlayerHand::PlayerHand(PlayerHandObserver* observer_, PlayerInitialisers initialisers_, Drunkometer drunkometer_)
 {
@@ -161,6 +162,7 @@ void PlayerHand::Update(float delta_)
 				throwButtonHeld = true;
 				throwVelocity = 0.f;			
 				throwButtonTimer = 0.f;
+				BeerPongSound::PlayThrowPower(player);
 			}
 
 			//add to velocity and held timer
@@ -179,7 +181,9 @@ void PlayerHand::Update(float delta_)
 			}
 		}	
 		else if (throwButtonHeld) //if throw button was just released
-		{		
+		{	
+			BeerPongSound::StopThrowPower(player);
+			BeerPongSound::PlayThrowBall();
 			throwButtonHeld = false;
 			ThrowBall();
 		}

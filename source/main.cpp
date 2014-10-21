@@ -13,9 +13,13 @@
 
 //this will only work in a Windows environment
 #include "FileSettings.h"
+#include "BeerPongSound.h"
 
 int main( int argc, char* argv[] )
 {	
+	//initialise sound lib
+	BeerPongSound::Initialise();
+
 	srand (time(NULL));
 	FileSettings* fs = FileSettings::Instance();
 	BeerPongGame game;

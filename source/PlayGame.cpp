@@ -1,6 +1,7 @@
 #include "PlayGame.h"
 #include "CollisionCheck.h"
 #include "PlayerControls.h"
+#include "BeerPongSound.h"
 
 
 PlayGame::PlayGame()
@@ -147,6 +148,7 @@ void PlayGame::Update()
 				{
 					players[cups[cupNum].victim].TakeADrink();
 					balls[i].Kill();
+					BeerPongSound::PlayBallInCupSound();
 				}
 				else if ( CollisionCheck::CheckRectangleCollision(balls[i].GetCollider(),  cups[cupNum].GetCupCollider()) )
 				{

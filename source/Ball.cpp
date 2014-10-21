@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Consts.h"
 #include <cmath>
+#include "BeerPongSound.h"
 
 #define PI 3.14159265
 
@@ -64,7 +65,18 @@ void Ball::Kill()
 
 void Ball::ReboundOffCup()
 {
-	velocity.x = -velocity.x;
+	BeerPongSound::PlayBallBounceSound();
+	velocity.x = -velocity.x;	
+}
+
+void Ball::ReboundOffFloor()
+{
+	BeerPongSound::PlayBallBounceSound();
+	velocity.y = -(velocity.y * settings->GetFloat("BOUNCE_LOSS"));
+	bounceCount++;
+	ballTimer = 0;												//Assists in stopping ball getting trapped between screen - thanks Gravity
+	if (bounceCount >= settings->GetInt("MAX_BOUNCE_COUNT"))
+		active = false;
 }
 
 bool Ball::IsFalling()	
@@ -96,21 +108,11 @@ void Ball::Update(float delta_)
 	}
 
 	if(active)
-	{
-		//if this ball is just showing the trajectory we dont want to worry about the timer as it can cause bugs
-		//if ( trajectoryBall && pos.y <  settings->GetInt("BAR_BOUNCE_HEIGHT") + settings->GetInt("PONG_DIAMETER")*0.5f )
-		//{
-		//	velocity.y = -(velocity.y * settings->GetFloat("BOUNCE_LOSS"));
-		//}
-		
+	{		
 		//if we are a normal thrown ball
 		if(!trajectoryBall && pos.y <  settings->GetInt("BAR_BOUNCE_HEIGHT") + settings->GetInt("PONG_DIAMETER")*0.5f && ballTimer > 0.05f)
 		{
-			velocity.y = -(velocity.y * settings->GetFloat("BOUNCE_LOSS"));
-			bounceCount++;
-			ballTimer = 0;												//Assists in stopping ball getting trapped between screen - thanks Gravity
-			if (bounceCount >= settings->GetInt("MAX_BOUNCE_COUNT"))
-				active = false;
+			ReboundOffFloor();
 		}
 		
 		if ( velocity.x > 0 ) velocity.x -= settings->GetFloat("AIR_RESISTANCE") * delta_;

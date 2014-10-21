@@ -27,6 +27,7 @@ public:
 	void Draw();
 	bool Active();
 	void ReboundOffCup();
+	void ReboundOffFloor();
 	bool IsFalling();
 	void Kill();
 	Rect GetCollider();
