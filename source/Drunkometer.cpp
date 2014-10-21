@@ -1,15 +1,19 @@
 #include "Drunkometer.h"
+#include "MathHelpers.h"
 
 
 Drunkometer::Drunkometer(void)
 {
 	settings = FileSettings::Instance();
+
+
 }
 
 Drunkometer::Drunkometer(DrunkometerInitialisers di_)
 {
 	settings = FileSettings::Instance();
-
+	drunkoBarSprite = CreateSprite("./images/drunkometer_v1.1.png", settings->GetInt("DRUNKOMETER_W"), settings->GetInt("DRUNKOMETER_H"), true);
+	drunkoMugSprite = CreateSprite("./images/beermug_drunkometer.png", settings->GetInt("DRUNKOMETER_MUG_W"), settings->GetInt("DRUNKOMETER_MUG_H"), true);
 	pos = di_.pos;
 }
 
@@ -24,19 +28,28 @@ Drunkometer::~Drunkometer(void)
 void Drunkometer::Update(float drunkenness_)
 {
 	drunkenness = drunkenness_;
+	MoveSprite(drunkoBarSprite, pos.x, pos.y);
+	
+	//find starting/end points and lerp between
+	float mugXStartingPoint = pos.x - settings->GetInt("DRUNKOMETER_W") /2;
+	float mugXEndPoint = pos.x + settings->GetInt("DRUNKOMETER_W") /2;
+	float mugXPos = Lerp(mugXStartingPoint, mugXEndPoint, drunkenness/100.f);
+	MoveSprite(drunkoMugSprite, mugXPos, pos.y - 10);
 }
 
 void Drunkometer::Draw()
 {
-	//write stuff about things
-	SetFont( "./fonts/invaders.fnt" );
-	
-	//display drunkometer
-	string drunkStr = "Drunkometer: ";
-	drunkStr += to_string(drunkenness) + " - " +  DrunkZoneToString(GetCurrentZone());
-	DrawString( drunkStr.c_str(),	pos.x,	pos.y, 0.8f, SColour(0,0,0,255));
+	////write stuff about things
+	//SetFont( "./fonts/invaders.fnt" );
+	//
+	////display drunkometer
+	//string drunkStr = "Drunkometer: ";
+	//drunkStr += to_string(drunkenness) + " - " +  DrunkZoneToString(GetCurrentZone());
+	//DrawString( drunkStr.c_str(),	pos.x,	pos.y, 0.8f, SColour(0,0,0,255));
 
-	SetFont( nullptr );
+	//SetFont( nullptr );
+	DrawSprite(drunkoBarSprite);
+	DrawSprite(drunkoMugSprite);
 }
 
 

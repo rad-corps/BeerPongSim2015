@@ -31,5 +31,8 @@ private:
 	Vector2 pos;
 	FileSettings* settings;
 
+	unsigned int drunkoBarSprite;
+	unsigned int drunkoMugSprite;
+
 };
 
