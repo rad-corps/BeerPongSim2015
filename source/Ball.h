@@ -13,8 +13,15 @@
 class Ball
 {
 public:
+	Ball();
 	Ball(Vector2 pos_, float angle_, float velocity_);
 	~Ball();
+
+	//rather than use a copy constructor, todo change later to copy ctor. 
+	void CopyPhisicalProperties(const Ball& ball_);
+
+
+	void Init(Vector2 pos_, float angle_, float velocity_);
 
 	void Update(float delta_);
 	void Draw();
@@ -30,19 +37,12 @@ private:
 	
 	Vector2 velocity;
 	Vector2 pos;
-	//float angle;
-	//float velocityX;
-	//float velocityY;
 	bool active;
 	float ballTimer;
-	
 	int bounceCount;
-
-	//New grav calc
-	//float gravity;
-	//float worldMass;
-
 	int dir_mod;
+
+	bool trajectoryBall;
 };
 
 #endif	//	BALL_H

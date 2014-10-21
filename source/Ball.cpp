@@ -10,17 +10,42 @@ using namespace bp_ball;
 
 Ball::Ball(Vector2 pos_, float angle_, float velocity_)
 {
+	settings = FileSettings::Instance();	
+	spriteID = CreateSprite("./images/Pongball_v1_bord_v2.png",settings->GetInt("PONG_DIAMETER"), settings->GetInt("PONG_DIAMETER"), true);
+	Init(pos_, angle_, velocity_);
+	active = true;
+	trajectoryBall = false;
+}
+
+void Ball::CopyPhisicalProperties(const Ball& ball_)
+{
+	pos = ball_.pos;
+	velocity = ball_.velocity;
+	ballTimer = ball_.ballTimer;
+	active = ball_.active;
+}
+
+void
+Ball::Init(Vector2 pos_, float angle_, float velocity_)
+{
 	velocity.SetMagnitude(velocity_);
 	float radians = (angle_ - 90) * PI/180;
 	velocity.SetAngle(radians);
-	settings = FileSettings::Instance();
-	spriteID = CreateSprite("./images/Pongball_v1_bord_v2.png",settings->GetInt("PONG_DIAMETER"), settings->GetInt("PONG_DIAMETER"), true);
 	pos = pos_;
 	active = true;
 	ballTimer = 0;
 	bounceCount = 0;
 	dir_mod = 1;
 }
+
+//must be initialised before using
+Ball::Ball()
+{
+	settings = FileSettings::Instance();	
+	trajectoryBall = true;
+	spriteID = CreateSprite("./images/Pongball_v2.png",settings->GetInt("PONG_DIAMETER"), settings->GetInt("PONG_DIAMETER"), true);
+}
+
 
 
 Ball::~Ball()
@@ -72,7 +97,14 @@ void Ball::Update(float delta_)
 
 	if(active)
 	{
-		if(pos.y <  settings->GetInt("BAR_BOUNCE_HEIGHT") + settings->GetInt("PONG_DIAMETER")*0.5f && ballTimer > 0.05f)
+		//if this ball is just showing the trajectory we dont want to worry about the timer as it can cause bugs
+		//if ( trajectoryBall && pos.y <  settings->GetInt("BAR_BOUNCE_HEIGHT") + settings->GetInt("PONG_DIAMETER")*0.5f )
+		//{
+		//	velocity.y = -(velocity.y * settings->GetFloat("BOUNCE_LOSS"));
+		//}
+		
+		//if we are a normal thrown ball
+		if(!trajectoryBall && pos.y <  settings->GetInt("BAR_BOUNCE_HEIGHT") + settings->GetInt("PONG_DIAMETER")*0.5f && ballTimer > 0.05f)
 		{
 			velocity.y = -(velocity.y * settings->GetFloat("BOUNCE_LOSS"));
 			bounceCount++;

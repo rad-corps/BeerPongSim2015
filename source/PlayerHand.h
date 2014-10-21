@@ -31,8 +31,11 @@ public:
 
 private:
 
-	void RotateHand(float delta_, bool clockwise_);
+	void RotateHand(float speed_);
 	void ThrowBall();
+	void CalculateTrajectory();
+
+	void CalculateBallProperties(Vector2& ballOffset_, float& rotation_);
 
 	
 	Vector2 handPos; //locked x Axis
@@ -49,9 +52,15 @@ private:
 	float involuntaryMovementDuration;
 	float currentInvoluntaryMovementDuration;
 
+	//involuntary rotation movement
+	ROT_DIR involuntaryRotationDir;
+	float involuntaryRotationVelocity;
+	float involuntaryRotationDuration;
+	float currentInvoluntaryRotationDuration;
+
 	//involuntary movement y axis calculation
 	void CalculateInvoluntaryMovement();
-	void DoInvoluntaryMovement();
+	void DoInvoluntaryMovement(float delta_);
 
 
 	//Testing Functions
@@ -74,5 +83,6 @@ private:
 	float ballSpawnPositionOffset;
 
 	bool invertX;
+	int player; //0 or 1
 };
 

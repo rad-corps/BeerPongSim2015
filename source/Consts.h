@@ -23,6 +23,12 @@ enum Y_DIR
 	Y_DIR_UP,
 	Y_DIR_DOWN
 };
+
+enum ROT_DIR
+{
+	CLOCKWISE,
+	ANTICLOCKWISE
+};
 //
 //	//so there is always some movement even from the start. 
 //	const float MIN_DRUNKENNESS_MOVEMENT_MULTI = 10.f; 

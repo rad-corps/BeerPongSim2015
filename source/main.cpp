@@ -16,6 +16,7 @@
 
 int main( int argc, char* argv[] )
 {	
+	srand (time(NULL));
 	FileSettings* fs = FileSettings::Instance();
 	BeerPongGame game;
 	game.Run();

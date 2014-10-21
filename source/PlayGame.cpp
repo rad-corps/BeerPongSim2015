@@ -7,6 +7,9 @@ PlayGame::PlayGame()
 {
 	//init file settings
 	settings = FileSettings::Instance();
+
+	//initialise pause key state
+	paused = false;
 	
 	//set initial game state
 	stateSelection = GAME_STATES::PLAYING_GAME;
@@ -14,6 +17,21 @@ PlayGame::PlayGame()
 	//setup background image
 	backgroundImage = CreateSprite("./images/bar-02.png", settings->GetInt("SCREEN_W"), settings->GetInt("SCREEN_H"), true);
 	MoveSprite(backgroundImage, settings->GetInt("SCREEN_W")*0.5f, settings->GetInt("SCREEN_H")*0.5f);
+
+	//initialise balls for trajectory
+	for (int i = 0; i < 20; ++i )
+	{
+		p1Trajectory.push_back(Ball());
+	}
+	for (int i = 0; i < 20; ++i )
+	{
+		p2Trajectory.push_back(Ball());
+	}
+	p1ShowTrajectory = false;
+	p2ShowTrajectory = false;
+
+	offScreenBall = Ball();
+	offScreenBall.Init(Vector2(-100.f, -100.f), 0.f, 0.f);
 	
 	
 	//setup the control layout
@@ -90,6 +108,23 @@ PlayGame::~PlayGame()
 
 void PlayGame::Update()
 {
+	//handle pause state
+	if ( IsKeyDown(KEY_P) )
+	{
+		paused = true;
+	}
+
+	if ( IsKeyDown(KEY_SPACE) )
+	{
+		paused = false;
+	}
+
+	if ( paused )
+	{
+		GetDeltaTime();
+		return;
+	}
+	
 	float delta = GetDeltaTime();
 
 	for (int i = 0; i < players.size(); ++i)
@@ -127,8 +162,6 @@ void PlayGame::Update()
 		cups[i].Update(delta);
 	}
 
-	
-
 	//[TO DO]  Iterate through ball vector & delete !active balls
 }
 
@@ -151,6 +184,24 @@ void PlayGame::Draw()
 		cups[i].Draw();
 	}
 
+	if ( p1ShowTrajectory )
+	{
+		for ( int i = 0; i < p1Trajectory.size(); ++i )
+		{			
+			p1Trajectory[i].Draw();
+		}
+	}
+	
+	if ( p2ShowTrajectory )
+	{
+		for ( int i = 0; i < p2Trajectory.size(); ++i )
+		{
+			p2Trajectory[i].Draw();
+		}
+	}
+
+	p1ShowTrajectory = false;
+	p2ShowTrajectory = false;
 	
 }
 
@@ -158,4 +209,38 @@ void PlayGame::ThrowBall(Vector2 pos_, float angle_, float velocity_)
 {
 	Ball ball = Ball(pos_, angle_, velocity_);
 	balls.push_back(ball);
+}
+
+void PlayGame::CalculateTrajectory(Vector2 pos_, float angle_, float velocity_, int player_, int numBalls_)
+{
+	std::vector<Ball>* trajectoryPtr;
+	
+	if ( player_ == 0 )
+	{
+		p1ShowTrajectory = true;
+		trajectoryPtr = &p1Trajectory;
+	}
+	else
+	{
+		p2ShowTrajectory = true;
+		trajectoryPtr = &p2Trajectory;
+	}
+
+	//clear the balls
+	for (int i = 0; i < (*trajectoryPtr).size(); ++i )
+	{
+		//(*trajectoryPtr)[i].CopyPhisicalProperties(offScreenBall);
+		(*trajectoryPtr)[i].Kill();
+	}
+
+	//set the first element
+	(*trajectoryPtr)[0].Init(pos_, angle_, velocity_);
+	
+	//start from the 2nd element (first one has been set)
+	for (int i = 1; i < numBalls_; ++i )
+	{
+		(*trajectoryPtr)[i].CopyPhisicalProperties((*trajectoryPtr)[i - 1]);
+		(*trajectoryPtr)[i].Update(0.035f);
+	}
+	return;
 }

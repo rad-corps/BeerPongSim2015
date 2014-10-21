@@ -10,12 +10,18 @@ PlayerHand::PlayerHand(PlayerHandObserver* observer_, PlayerInitialisers initial
 	handPos = Vector2(initialisers_.initialX,initialisers_.initialY);
 	
 	invertX = initialisers_.invertX;
+	
+	if ( invertX ) player = 1 ;
+	else player = 0;
 
 	RotateSprite(handSpriteTest, initialisers_.initialRotation);
 	handRotation = 90.f;//TODO fix this hard code
 	//handRotation = INITIAL_ROTATION;
 	drunkenness = 0.f;
 	currentInvoluntaryMovementDuration = 0.f;
+	currentInvoluntaryRotationDuration = 0.0f;
+	involuntaryMovementDuration = 0.0f;
+
 	involuntaryMovementDir = Y_DIR::Y_DIR_UP;
 	RegisterObserver(observer_);
 
@@ -27,6 +33,8 @@ PlayerHand::PlayerHand(PlayerHandObserver* observer_, PlayerInitialisers initial
 	ballSpawnRotationOffset = initialisers_.ballSpawnRotationOffset;
 
 	drunkometer = drunkometer_;
+
+
 }
 
 
@@ -54,27 +62,51 @@ void PlayerHand::Draw()
 	drunkometer.Draw();
 }
 
-void PlayerHand::ThrowBall()
+void PlayerHand::CalculateBallProperties(Vector2& ballOffset_, float& rotation_)
 {
 	//yeah its a hack, sorry!
-	float tempHandRot = 0.f;
+	rotation_ = 0.f;
 	if ( invertX ) 
-		tempHandRot = handRotation - 180;
+		rotation_ = handRotation - 180;
 	else
-		tempHandRot = handRotation;
+		rotation_ = handRotation;
 
-	throwButtonHeld = false;
-	//calculate initial ball position
-	Vector2 ballOffset;		
 	
-	float handRotationInRadians = (tempHandRot * DEG_TO_RAD) + ballSpawnRotationOffset;
-	ballOffset.SetAngle(handRotationInRadians);
-	ballOffset.SetMagnitude(ballSpawnPositionOffset);
+	//calculate initial ball position	
 	
-	ballOffset += handPos;
-	observer->ThrowBall(ballOffset, tempHandRot, throwVelocity);
+	float handRotationInRadians = (rotation_ * DEG_TO_RAD) + ballSpawnRotationOffset;
+	ballOffset_.SetAngle(handRotationInRadians);
+	ballOffset_.SetMagnitude(ballSpawnPositionOffset);	
+	ballOffset_ += handPos;
 }
 
+void PlayerHand::ThrowBall()
+{
+	Vector2 ballOffset;
+	float temprotation;
+	float velocity;
+	CalculateBallProperties(ballOffset, temprotation);
+	observer->ThrowBall(ballOffset, temprotation, throwVelocity);
+}
+
+void PlayerHand::CalculateTrajectory()
+{
+	Vector2 ballOffset;
+	float temprotation;
+	float velocity;
+	CalculateBallProperties(ballOffset, temprotation);
+
+	//how many balls do we want to show? 20 for game on, 10 for nervous, 5 for too fn drunk
+	int numBalls;
+	if ( drunkometer.GetCurrentZone() == DRUNK_ZONE::DRUNK_ZONE_NERVOUS )
+		numBalls = 10;
+	else if ( drunkometer.GetCurrentZone() == DRUNK_ZONE::DRUNK_ZONE_GAME_ON_MOLE )
+		numBalls = 20;
+	else if ( drunkometer.GetCurrentZone() == DRUNK_ZONE::DRUNK_ZONE_TOO_FN_DRUNK )
+		numBalls = 5;
+
+	observer->CalculateTrajectory(ballOffset, temprotation, throwVelocity, player, numBalls);
+}
 
 void PlayerHand::Update(float delta_)
 {
@@ -83,6 +115,9 @@ void PlayerHand::Update(float delta_)
 
 	//increase timer
 	currentInvoluntaryMovementDuration += delta_;
+
+	if ( drunkenness > 0.f )
+		drunkenness -= delta_ * settings->GetFloat("SOBERING_UP_MULTI");
 	
 	//recalculate if timer is done
 	if  (currentInvoluntaryMovementDuration > involuntaryMovementDuration ) 
@@ -91,7 +126,7 @@ void PlayerHand::Update(float delta_)
 	}
 
 	//HOW DRUNK ARE YA?? *hic*
-	DoInvoluntaryMovement();	
+	DoInvoluntaryMovement(delta_);	
 
 	//do user input
 	if ( IsKeyDown(controls.up) ) 
@@ -108,11 +143,11 @@ void PlayerHand::Update(float delta_)
 	}
 	if ( IsKeyDown(controls.anticlockwise) ) 
 	{
-		RotateHand(delta_, false);
+		RotateHand(delta_ * settings->GetFloat("ROTATION_SPEED"));
 	}
 	if ( IsKeyDown(controls.clockwise) ) 
 	{
-		RotateHand(delta_, true);
+		RotateHand(delta_ * -settings->GetFloat("ROTATION_SPEED"));
 	}
 	
 	//inactive if user has held it longer than MAX_VELOCITY_CAP_TIME
@@ -138,9 +173,14 @@ void PlayerHand::Update(float delta_)
 				throwButtonActive = false;
 				ThrowBall();
 			}
+			else
+			{
+				CalculateTrajectory();
+			}
 		}	
 		else if (throwButtonHeld) //if throw button was just released
 		{		
+			throwButtonHeld = false;
 			ThrowBall();
 		}
 	}
@@ -158,26 +198,21 @@ void PlayerHand::Update(float delta_)
 }
 
 //rotation
-void PlayerHand::RotateHand(float delta_, bool clockwise_)
+void PlayerHand::RotateHand(float speed_)
 {
-	float rotationDifference = delta_ * settings->GetFloat("ROTATION_SPEED");
-	if ( clockwise_ ) 
-	{
-		rotationDifference = -rotationDifference;
-	}
+	float newHandRotation = handRotation + speed_;
 
-	handRotation += rotationDifference;
-	if ( handRotation > settings->GetFloat("ROTATION_MAX") )
-	{
-		handRotation = settings->GetFloat("ROTATION_MAX");
-		return;
+	if ( newHandRotation > settings->GetFloat("ROTATION_MAX") )
+	{		
+		newHandRotation = settings->GetFloat("ROTATION_MAX");
 	}
-	if (handRotation < settings->GetFloat("ROTATION_MIN") )
+	if (newHandRotation < settings->GetFloat("ROTATION_MIN") )
 	{
-		handRotation = settings->GetFloat("ROTATION_MIN");
-		return;
+		newHandRotation = settings->GetFloat("ROTATION_MIN");
 	}
-	RotateSprite(handSpriteTest, rotationDifference);
+	speed_ = newHandRotation - handRotation;
+	handRotation = newHandRotation;
+	RotateSprite(handSpriteTest, speed_);
 }
 
 //these 2 functions are just here for testing
@@ -201,6 +236,7 @@ void PlayerHand::DecreaseDrunkennessForTesting(float delta_)
 //called when its time to recalc movement velocity/direction
 void PlayerHand::CalculateInvoluntaryMovement()
 {
+	
 	float tempDrunkenness = settings->GetFloat("MIN_DRUNKENNESS_MOVEMENT_MULTI");
 
 	//reset timer
@@ -214,22 +250,38 @@ void PlayerHand::CalculateInvoluntaryMovement()
 		tempDrunkenness = drunkenness;
 
 	//calculate involuntary movement
-	involuntaryMovementVelocity = (tempDrunkenness / 600) * RandomPercentageAbove(0.5f);
+	involuntaryMovementVelocity = (tempDrunkenness) * RandomPercentageAbove(0.5f);
 
 	//calculate the duration of the movement 
 	float drunkFraction = drunkenness / 100.f;
 	involuntaryMovementDuration = Lerp(0.2f, 0.6f, drunkFraction);
+
+	//TODO break off into another calculate function
+	//switch rotation direction
+	involuntaryRotationDir == ROT_DIR::ANTICLOCKWISE ? involuntaryRotationDir = ROT_DIR::CLOCKWISE : involuntaryRotationDir = ROT_DIR::ANTICLOCKWISE;
+	
+	//calculate involuntary rotation
+	involuntaryRotationVelocity = (tempDrunkenness) * RandomPercentageAbove(0.25f);
 }
 
 //called once every frame
-void PlayerHand::DoInvoluntaryMovement()
+void PlayerHand::DoInvoluntaryMovement(float delta_)
 {
 	float tempInvoluntaryMovementVelocity = involuntaryMovementVelocity;
 
 	if ( drunkometer.GetCurrentZone() == DRUNK_ZONE::DRUNK_ZONE_GAME_ON_MOLE )
 		tempInvoluntaryMovementVelocity /= settings->GetFloat("IN_THE_ZONE_DIVIDER");
 
-	involuntaryMovementDir == Y_DIR::Y_DIR_UP ? handPos.y += tempInvoluntaryMovementVelocity : handPos.y -= tempInvoluntaryMovementVelocity;
+	involuntaryMovementDir == Y_DIR::Y_DIR_UP ? handPos.y += tempInvoluntaryMovementVelocity * delta_: handPos.y -= tempInvoluntaryMovementVelocity * delta_;
+
+	//do rotation involuntary movement
+	if ( drunkometer.GetCurrentZone() == DRUNK_ZONE::DRUNK_ZONE_TOO_FN_DRUNK )
+	{
+		if ( involuntaryRotationDir ==  ROT_DIR::CLOCKWISE )
+			RotateHand(involuntaryRotationVelocity * delta_);
+		else
+			RotateHand(-involuntaryRotationVelocity * delta_);
+	}
 }
 
 
