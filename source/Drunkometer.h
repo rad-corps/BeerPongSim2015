@@ -22,11 +22,12 @@ public:
 	void Draw();
 
 	DRUNK_ZONE GetCurrentZone();
+	string DrunkZoneToString(DRUNK_ZONE dz_);
 
 private:
 	
-	string DrunkZoneToString(DRUNK_ZONE dz_);	
-
+		
+	
 	float drunkenness;
 	Vector2 pos;
 	FileSettings* settings;

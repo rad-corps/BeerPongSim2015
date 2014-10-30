@@ -15,6 +15,9 @@
 #include "FileSettings.h"
 #include "BeerPongSound.h"
 
+
+
+
 int main( int argc, char* argv[] )
 {	
 	//initialise sound lib
@@ -24,7 +27,6 @@ int main( int argc, char* argv[] )
 	FileSettings* fs = FileSettings::Instance();
 	BeerPongGame game;
 	game.Run();
-		
 	Shutdown();
 
 	return 0;

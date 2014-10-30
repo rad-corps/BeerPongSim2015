@@ -18,4 +18,6 @@ struct PlayerInitialisers
 	bool invertX;
 	float ballSpawnRotationOffset;
 	float ballSpawnPositionOffset;
+	int zoneTextX;
+	int zoneTextY;
 };

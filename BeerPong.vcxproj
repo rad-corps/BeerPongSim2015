@@ -88,9 +88,12 @@
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>./libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>AIE_1st_Year_Framework.lib;kernel32.lib;bass.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/SAFESEH:NO %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\InputHelper.cpp" />
+    <ClCompile Include="source\Instructions.cpp" />
     <ClCompile Include="source\BeerPongSound.cpp" />
     <ClCompile Include="source\Drunkometer.cpp" />
     <ClCompile Include="source\CollisionCheck.cpp" />
@@ -109,6 +112,8 @@
     <ClCompile Include="source\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\InputHelper.h" />
+    <ClInclude Include="source\Instructions.h" />
     <ClInclude Include="source\BeerPongSound.h" />
     <ClInclude Include="source\Drunkometer.h" />
     <ClInclude Include="source\CollisionCheck.h" />
@@ -128,6 +133,7 @@
     <ClInclude Include="source\PlayerHandObserver.h" />
     <ClInclude Include="source\PlayGame.h" />
     <ClInclude Include="source\Rect.h" />
+    <ClInclude Include="source\StateObserver.h" />
     <ClInclude Include="source\Vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

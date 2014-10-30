@@ -4,10 +4,15 @@
 #include "BeerPongSound.h"
 
 
-PlayGame::PlayGame()
+PlayGame::PlayGame(StateObserver* observer_)
 {
+	observer = observer_;
+
 	//init file settings
 	settings = FileSettings::Instance();
+
+	//play ambient pub sounds
+	BeerPongSound::PlayAmbience();
 
 	//initialise pause key state
 	paused = false;
@@ -66,6 +71,8 @@ PlayGame::PlayGame()
 	p1Init.spritePath = "./images/handthrow.png";
 	p1Init.ballSpawnPositionOffset = settings->GetFloat("P1_BALL_SPAWN_POSITION_OFFSET");
 	p1Init.ballSpawnRotationOffset = settings->GetFloat("P1_BALL_SPAWN_ROTATION_OFFSET");
+	p1Init.zoneTextX = settings->GetFloat("P1_ZONE_TEXT_X");
+	p1Init.zoneTextY = settings->GetFloat("P1_ZONE_TEXT_Y");
 	p1Init.invertX = false;
 
 	PlayerInitialisers p2Init;
@@ -75,6 +82,8 @@ PlayGame::PlayGame()
 	p2Init.spritePath = "./images/handthrow2.png";
 	p2Init.ballSpawnPositionOffset = settings->GetFloat("P2_BALL_SPAWN_POSITION_OFFSET");
 	p2Init.ballSpawnRotationOffset = settings->GetFloat("P2_BALL_SPAWN_ROTATION_OFFSET");
+	p2Init.zoneTextX = settings->GetFloat("P2_ZONE_TEXT_X");
+	p2Init.zoneTextY = settings->GetFloat("P2_ZONE_TEXT_Y");
 	p2Init.invertX = true;
 
 	PlayerHand p1 = PlayerHand(this, p1Init, drunko1);
@@ -105,6 +114,7 @@ PlayGame::PlayGame()
 
 PlayGame::~PlayGame()
 {
+	BeerPongSound::StopAmbience();
 }
 
 void PlayGame::Update()
@@ -190,7 +200,8 @@ void PlayGame::Draw()
 	{
 		for ( int i = 0; i < p1Trajectory.size(); ++i )
 		{			
-			p1Trajectory[i].Draw();
+			if ( p1Trajectory[i].Active() )
+				p1Trajectory[i].Draw();
 		}
 	}
 	
@@ -198,7 +209,8 @@ void PlayGame::Draw()
 	{
 		for ( int i = 0; i < p2Trajectory.size(); ++i )
 		{
-			p2Trajectory[i].Draw();
+			if ( p2Trajectory[i].Active() )
+				p2Trajectory[i].Draw();
 		}
 	}
 
@@ -244,5 +256,14 @@ void PlayGame::CalculateTrajectory(Vector2 pos_, float angle_, float velocity_, 
 		(*trajectoryPtr)[i].CopyPhisicalProperties((*trajectoryPtr)[i - 1]);
 		(*trajectoryPtr)[i].Update(0.035f);
 	}
+	
 	return;
+}
+
+void PlayGame::GameOverEvent(int loser_)
+{
+	if ( loser_ == 0 )
+		observer->GameOverEvent(2);
+	if ( loser_ == 1 )
+		observer->GameOverEvent(1);
 }

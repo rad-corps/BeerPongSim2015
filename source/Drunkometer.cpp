@@ -35,6 +35,8 @@ void Drunkometer::Update(float drunkenness_)
 	float mugXEndPoint = pos.x + settings->GetInt("DRUNKOMETER_W") /2;
 	float mugXPos = Lerp(mugXStartingPoint, mugXEndPoint, drunkenness/100.f);
 	MoveSprite(drunkoMugSprite, mugXPos, pos.y - 10);
+	
+
 }
 
 void Drunkometer::Draw()
@@ -68,11 +70,11 @@ DRUNK_ZONE Drunkometer::GetCurrentZone()
 string Drunkometer::DrunkZoneToString(DRUNK_ZONE dz_)
 {
 	if ( dz_ == DRUNK_ZONE_NERVOUS ) 
-		return "Nervous..";
+		return "   Nervous.. ";
 	if ( dz_ == DRUNK_ZONE_GAME_ON_MOLE ) 
-		return "Game On Mole!";
+		return "   Game On!  ";
 	if ( dz_ == DRUNK_ZONE_TOO_FN_DRUNK ) 
 		return "Too F'N Drunk!";
 	if ( dz_ == DRUNK_ZONE_END ) 
-		return "Fell over!";
+		return "  Fell over!  ";
 }

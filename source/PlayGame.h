@@ -5,11 +5,12 @@
 #include <vector>
 #include "Ball.h"
 #include "Cup.h"
+#include "StateObserver.h"
 
 class PlayGame : public GAMESTATE, public PlayerHandObserver
 {
 public:
-	PlayGame();
+	PlayGame(StateObserver* observer_);
 	~PlayGame();
 
 	void Update();
@@ -17,6 +18,7 @@ public:
 
 	virtual void ThrowBall(Vector2 pos_, float angle_, float velocity_);
 	virtual void CalculateTrajectory(Vector2 pos_, float angle_, float velocity_, int player_, int numBalls_);
+	virtual void GameOverEvent(int loser_);
 
 private:
 	FileSettings* settings;
@@ -34,5 +36,7 @@ private:
 	bool p2ShowTrajectory;
 
 	bool paused;
+
+	StateObserver* observer;
 };
 

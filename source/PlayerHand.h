@@ -84,5 +84,12 @@ private:
 
 	bool invertX;
 	int player; //0 or 1
+
+	int zoneTextX;
+	int zoneTextY;
+
+	DRUNK_ZONE lastZone;
+	bool displayEvent;
+	float eventTimer;
 };
 

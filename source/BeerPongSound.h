@@ -14,6 +14,8 @@ public:
 	static void PlayThrowPower(int player_);
 	static void StopThrowPower(int player_);
 	static void PlayThrowBall();
+	static void PlayAmbience();
+	static void StopAmbience();
 
 
 private:
@@ -24,5 +26,6 @@ private:
 	static HSTREAM throwPowerSound0;
 	static HSTREAM throwPowerSound1;
 	static HSTREAM throwSound;
+	static HSTREAM ambience;
 };
 

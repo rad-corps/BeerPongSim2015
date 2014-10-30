@@ -7,6 +7,7 @@ HSTREAM BeerPongSound::ballInCupSound = 0;
 HSTREAM BeerPongSound::throwPowerSound0 = 0;
 HSTREAM BeerPongSound::throwPowerSound1 = 0;
 HSTREAM BeerPongSound::throwSound = 0;
+HSTREAM BeerPongSound::ambience = 0;
 
 BeerPongSound::BeerPongSound(void)
 {
@@ -26,7 +27,7 @@ void BeerPongSound::PlayBallBounceSound()
 
 void BeerPongSound::PlayBallInCupSound()
 {
-	BASS_ChannelPlay(ballInCupSound, false);
+	BASS_ChannelPlay(ballInCupSound, true);
 }
 
 void BeerPongSound::PlayThrowPower(int player_)
@@ -47,7 +48,17 @@ void BeerPongSound::StopThrowPower(int player_)
 
 void BeerPongSound::PlayThrowBall()
 {
-	BASS_ChannelPlay(throwSound, false);
+	BASS_ChannelPlay(throwSound, true);
+}
+
+void BeerPongSound::PlayAmbience()
+{
+	BASS_ChannelPlay(ambience, true);
+}
+
+void BeerPongSound::StopAmbience()
+{
+	BASS_ChannelStop(ambience);
 }
 
 void BeerPongSound::Initialise()
@@ -60,11 +71,24 @@ void BeerPongSound::Initialise()
 	ballBounceSounds.push_back(BASS_StreamCreateFile(false,"./sound/pong3.wav",0,0,0));
 	ballBounceSounds.push_back(BASS_StreamCreateFile(false,"./sound/pong4.wav",0,0,0));
 	ballBounceSounds.push_back(BASS_StreamCreateFile(false,"./sound/pong5.wav",0,0,0));
-
 	ballInCupSound = BASS_StreamCreateFile(false,"./sound/incup.wav",0,0,0);
-
 	throwPowerSound0 = BASS_StreamCreateFile(false,"./sound/throwpower.wav",0,0,0);
 	throwPowerSound1 = BASS_StreamCreateFile(false,"./sound/throwpower.wav",0,0,0);
 	throwSound = BASS_StreamCreateFile(false,"./sound/pop.wav",0,0,0);
+	ambience = BASS_StreamCreateFile(false,"./sound/pub.mp3",0,0,0);
+
+	for ( int i = 0 ; i < ballBounceSounds.size(); ++i )
+	{
+		BASS_ChannelSetAttribute(ballBounceSounds[i], BASS_ATTRIB_VOL, 0.3f);
+	}
+
+	//set volume of channels
+	BASS_ChannelSetAttribute(ballInCupSound, BASS_ATTRIB_VOL, 0.3f);
+	BASS_ChannelSetAttribute(throwPowerSound0, BASS_ATTRIB_VOL, 0.3f);
+	BASS_ChannelSetAttribute(throwPowerSound1, BASS_ATTRIB_VOL, 0.3f);
+	BASS_ChannelSetAttribute(throwSound, BASS_ATTRIB_VOL, 0.3f);
+	BASS_ChannelSetAttribute(ambience, BASS_ATTRIB_VOL, 0.4f);
+
+	
 
 }

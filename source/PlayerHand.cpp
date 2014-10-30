@@ -35,6 +35,10 @@ PlayerHand::PlayerHand(PlayerHandObserver* observer_, PlayerInitialisers initial
 
 	drunkometer = drunkometer_;
 
+	zoneTextX = initialisers_.zoneTextX;
+	zoneTextY = initialisers_.zoneTextY;
+
+	eventTimer = 0.0f;
 
 }
 
@@ -59,8 +63,13 @@ void PlayerHand::Draw()
 {
 	//draw the hand
 	DrawSprite( handSpriteTest);
-
-	drunkometer.Draw();
+	drunkometer.Draw();		
+	
+	if ( displayEvent )
+	{
+		DrawString(drunkometer.DrunkZoneToString(drunkometer.GetCurrentZone()).c_str(), 
+			this->handPos.x + zoneTextX, this->handPos.y + zoneTextY, 1.6f, SColour(0,0,0,255));
+	}
 }
 
 void PlayerHand::CalculateBallProperties(Vector2& ballOffset_, float& rotation_)
@@ -111,8 +120,30 @@ void PlayerHand::CalculateTrajectory()
 
 void PlayerHand::Update(float delta_)
 {
+	//trigger event
+	if ( lastZone != drunkometer.GetCurrentZone())
+	{
+		lastZone = drunkometer.GetCurrentZone();
+		displayEvent = true;
+		eventTimer = 0.0f;
+	}
+
+	if ( displayEvent )
+	{
+		eventTimer += delta_;
+		if ( eventTimer >= settings->GetFloat("ZONE_DISPLAY_TIME") )
+		{
+			displayEvent = false;
+			eventTimer = 0.0f;
+		}
+	}
+
+
 	if ( drunkometer.GetCurrentZone() == DRUNK_ZONE::DRUNK_ZONE_END )
+	{
+		observer->GameOverEvent(player);
 		return;
+	}
 
 	//increase timer
 	currentInvoluntaryMovementDuration += delta_;
@@ -173,6 +204,7 @@ void PlayerHand::Update(float delta_)
 			if ( throwButtonTimer > settings->GetFloat("MAX_VELOCITY_CAP_TIME") ) 
 			{
 				throwButtonActive = false;
+				throwButtonHeld = false;
 				ThrowBall();
 			}
 			else

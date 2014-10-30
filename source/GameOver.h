@@ -1,11 +1,12 @@
 #pragma once
 #include "GAMESTATE.h"
 #include "FileSettings.h"
+#include <string>
 
 class GameOver : public GAMESTATE
 {
 public:
-	GameOver();
+	GameOver(int victor_);
 	~GameOver();
 
 	void Update();
@@ -13,5 +14,6 @@ public:
 
 private:
 	FileSettings* settings;
+	string victor;
 };
 

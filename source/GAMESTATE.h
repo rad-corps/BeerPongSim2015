@@ -9,6 +9,8 @@ enum GAME_STATES
 	MENU,				//Includes instruction
 	PLAYING_GAME,		//Game Running
 	GAME_OVER,				//Thanks for playing
+	INSTRUCTIONS,		//Thanks for playing
+	SHUTTING_DOWN
 };
 
 class GAMESTATE
