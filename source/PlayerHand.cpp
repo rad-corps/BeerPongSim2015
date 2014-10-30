@@ -124,6 +124,15 @@ void PlayerHand::Update(float delta_)
 	if ( lastZone != drunkometer.GetCurrentZone())
 	{
 		lastZone = drunkometer.GetCurrentZone();
+		if ( lastZone == DRUNK_ZONE::DRUNK_ZONE_TOO_FN_DRUNK ) 
+		{
+			BeerPongSound::PlayBurp();
+		}
+		if ( lastZone == DRUNK_ZONE::DRUNK_ZONE_GAME_ON_MOLE) 
+		{
+			BeerPongSound::PlayCan();
+		}
+
 		displayEvent = true;
 		eventTimer = 0.0f;
 	}
@@ -141,6 +150,7 @@ void PlayerHand::Update(float delta_)
 
 	if ( drunkometer.GetCurrentZone() == DRUNK_ZONE::DRUNK_ZONE_END )
 	{
+		BeerPongSound::PlayCheer();
 		observer->GameOverEvent(player);
 		return;
 	}

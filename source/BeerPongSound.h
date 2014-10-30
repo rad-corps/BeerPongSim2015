@@ -13,6 +13,9 @@ public:
 	static void PlayBallInCupSound();
 	static void PlayThrowPower(int player_);
 	static void StopThrowPower(int player_);
+	static void PlayBurp();
+	static void PlayCan();
+	static void PlayCheer();
 	static void PlayThrowBall();
 	static void PlayAmbience();
 	static void StopAmbience();
@@ -27,5 +30,8 @@ private:
 	static HSTREAM throwPowerSound1;
 	static HSTREAM throwSound;
 	static HSTREAM ambience;
+	static HSTREAM burp;
+	static HSTREAM canOpen;
+	static HSTREAM cheer;
 };
 

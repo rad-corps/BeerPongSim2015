@@ -8,6 +8,11 @@ HSTREAM BeerPongSound::throwPowerSound0 = 0;
 HSTREAM BeerPongSound::throwPowerSound1 = 0;
 HSTREAM BeerPongSound::throwSound = 0;
 HSTREAM BeerPongSound::ambience = 0;
+HSTREAM BeerPongSound::burp = 0;
+HSTREAM BeerPongSound::canOpen = 0;
+HSTREAM BeerPongSound::cheer = 0;
+
+
 
 BeerPongSound::BeerPongSound(void)
 {
@@ -61,6 +66,22 @@ void BeerPongSound::StopAmbience()
 	BASS_ChannelStop(ambience);
 }
 
+void BeerPongSound::PlayBurp()
+{
+	BASS_ChannelPlay(burp, true);
+}
+
+void BeerPongSound::PlayCan()
+{
+	BASS_ChannelPlay(canOpen, true);
+}
+
+void BeerPongSound::PlayCheer()
+{
+	BASS_ChannelPlay(cheer, true);
+}
+
+
 void BeerPongSound::Initialise()
 {
 	BASS_Init(-1,44100,0,0,0);
@@ -76,6 +97,11 @@ void BeerPongSound::Initialise()
 	throwPowerSound1 = BASS_StreamCreateFile(false,"./sound/throwpower.wav",0,0,0);
 	throwSound = BASS_StreamCreateFile(false,"./sound/pop.wav",0,0,0);
 	ambience = BASS_StreamCreateFile(false,"./sound/pub.mp3",0,0,0);
+	burp = BASS_StreamCreateFile(false,"./sound/burpy.wav",0,0,0);
+	canOpen = BASS_StreamCreateFile(false,"./sound/can-open-1.mp3",0,0,0);
+	cheer= BASS_StreamCreateFile(false,"./sound/cheering.mp3",0,0,0);
+
+	//can-open-1.mp3
 
 	for ( int i = 0 ; i < ballBounceSounds.size(); ++i )
 	{
@@ -88,7 +114,7 @@ void BeerPongSound::Initialise()
 	BASS_ChannelSetAttribute(throwPowerSound1, BASS_ATTRIB_VOL, 0.3f);
 	BASS_ChannelSetAttribute(throwSound, BASS_ATTRIB_VOL, 0.3f);
 	BASS_ChannelSetAttribute(ambience, BASS_ATTRIB_VOL, 0.4f);
-
-	
-
+	BASS_ChannelSetAttribute(burp, BASS_ATTRIB_VOL, 0.9f);
+	BASS_ChannelSetAttribute(canOpen, BASS_ATTRIB_VOL, 0.9f);
+	BASS_ChannelSetAttribute(cheer, BASS_ATTRIB_VOL, 0.9f);
 }
